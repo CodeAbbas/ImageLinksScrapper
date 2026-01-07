@@ -7,11 +7,9 @@ module.exports = {
   theme: {
     extend: {
       fontFamily: {
-        sans: ['var(--font-inter)', 'sans-serif'], 
+        sans: ['var(--font-inter)', 'sans-serif'],
       },
     },
   },
-  plugins: [
-    require("tailwindcss-animate"), 
-  ],
+  plugins: [require("tailwindcss-animate")],
 };
