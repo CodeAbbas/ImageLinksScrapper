@@ -1,5 +1,4 @@
-
-import "./globals.css"; 
+import "./globals.css";
 
 export const metadata = {
   title: "Link Extractor Pro",
@@ -9,7 +8,7 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      <body className="bg-slate-50 min-h-screen text-slate-900 font-sans">
+      <body className="bg-slate-50 min-h-screen text-slate-900 antialiased">
         {children}
       </body>
     </html>
