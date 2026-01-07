@@ -8,11 +8,11 @@ module.exports = {
   theme: {
     extend: {
       fontFamily: {
-        sans: ['var(--font-inter)', 'sans-serif'], // Optional: If using Next/Font
+        sans: ['var(--font-inter)', 'sans-serif'], 
       },
     },
   },
   plugins: [
-    require("tailwindcss-animate"), // Required for the smooth UI transitions
+    require("tailwindcss-animate"), 
   ],
 };
