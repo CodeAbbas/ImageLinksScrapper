@@ -1,25 +1,47 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useTransition } from 'react';
 import Header from './Header';
 import UrlInputForm from './UrlInputForm';
 import AboutSection from './AboutSection';
 import ImageSelector from './ImageSelector';
 import OutputPanel from './OutputPanel';
-import { useImageExtractor } from '@/hooks/useImageExtractor'; // Note the @ alias
+import { scrapeImagesAction } from '@/app/actions/scrape'; // Ensure this server action is created
 
 export default function LinkExtractor() {
+  // --- State Management ---
   const [urlInput, setUrlInput] = useState('');
+  const [images, setImages] = useState([]);
+  const [error, setError] = useState('');
   const [filterText, setFilterText] = useState('');
   const [useHighRes, setUseHighRes] = useState(true);
   
-  // Custom hook usage
-  const { images, setImages, loading, error, extractImages } = useImageExtractor();
+  // useTransition manages the loading state for the Server Action
+  const [isPending, startTransition] = useTransition();
 
   // --- Handlers ---
   const handleExtract = (e) => {
     e.preventDefault();
-    extractImages(urlInput);
+    if (!urlInput) return;
+
+    setError('');
+    
+    // Executes the scraping logic on the server
+    startTransition(async () => {
+      try {
+        const result = await scrapeImagesAction(urlInput);
+        
+        if (result.success) {
+          setImages(result.data);
+        } else {
+          setError(result.error || 'Failed to extract images.');
+          setImages([]);
+        }
+      } catch (err) {
+        setError('A network error occurred. Please try again.');
+        setImages([]);
+      }
+    });
   };
 
   const toggleSelection = (id) => {
@@ -29,14 +51,17 @@ export default function LinkExtractor() {
   };
 
   const selectAll = (targetImages) => {
+    // targetImages refers to the current filtered set from ImageSelector
+    const targetIds = new Set(targetImages.map(img => img.id));
     setImages(prev => prev.map(img => 
-      targetImages.includes(img) ? { ...img, selected: true } : img
+      targetIds.has(img.id) ? { ...img, selected: true } : img
     ));
   };
 
   const deselectAll = (targetImages) => {
+    const targetIds = new Set(targetImages.map(img => img.id));
     setImages(prev => prev.map(img => 
-      targetImages.includes(img) ? { ...img, selected: false } : img
+      targetIds.has(img.id) ? { ...img, selected: false } : img
     ));
   };
 
@@ -57,12 +82,12 @@ export default function LinkExtractor() {
       <UrlInputForm 
         url={urlInput}
         setUrl={setUrlInput}
-        loading={loading}
+        loading={isPending} // transition state replaces manual loading state
         error={error}
         onSubmit={handleExtract}
       />
 
-      {images.length === 0 && !loading && (
+      {images.length === 0 && !isPending && (
         <AboutSection />
       )}
 
