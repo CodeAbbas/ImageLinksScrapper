@@ -21,7 +21,6 @@ export default function LinkExtractor() {
     e.preventDefault();
     if (!urlInput) return;
 
-    // Fix: Ensure the URL has https:// so the fetch doesn't fail
     const formattedUrl = urlInput.startsWith('http') ? urlInput : `https://${urlInput}`;
     extractImages(formattedUrl);
   };

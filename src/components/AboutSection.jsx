@@ -5,7 +5,7 @@ export default function AboutSection() {
   return (
     <div className="grid md:grid-cols-2 gap-8 items-center mt-12 mb-8 animate-in fade-in slide-in-from-bottom-8 duration-700">
       <div className="space-y-6 px-2">
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 text-blue-700 text-xs font-semibold uppercase tracking-wider">
+        <div className="lg:hidden inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 text-blue-700 text-xs font-semibold uppercase tracking-wider">
           About this Tool
         </div>
         <h2 className="text-3xl font-bold text-slate-800 leading-tight">
@@ -30,16 +30,13 @@ export default function AboutSection() {
       </div>
       
       <div className="relative group">
-         <div className="absolute -inset-1 bg-gradient-to-r from-blue-600 to-cyan-400 rounded-2xl blur opacity-25 group-hover:opacity-40 transition duration-1000"></div>
-         <div className="relative rounded-2xl overflow-hidden shadow-2xl border border-slate-100 bg-white">
+         <div className="absolute rounded-2xl blur opacity-25 group-hover:opacity-40 transition duration-1000"></div>
+         <div className="relative rounded-2xl overflow-hidden  border border-slate-100 bg-white">
             <img 
               src="https://woocommerce.com/wp-content/uploads/2019/04/single-page-checkout.gif" 
               alt="Workflow Demo" 
-              className="w-full h-auto object-cover transform transition duration-500 hover:scale-[1.02]"
-            />
-            <div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black/60 to-transparent p-6">
-               <p className="text-white font-medium text-sm">Visualizing seamless data extraction</p>
-            </div>
+              className="w-full h-full pt-4 object-cover transform transition duration-500 hover:scale-[1.02]"
+            />           
          </div>
       </div>
     </div>
