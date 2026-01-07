@@ -1,47 +1,37 @@
 'use client';
 
-import React, { useState, useMemo, useTransition } from 'react';
+import React, { useState, useMemo } from 'react';
 import Header from './Header';
 import UrlInputForm from './UrlInputForm';
 import AboutSection from './AboutSection';
 import ImageSelector from './ImageSelector';
 import OutputPanel from './OutputPanel';
-import { scrapeImagesAction } from '@/app/actions/scrape'; // Ensure this server action is created
+import { useImageExtractor } from '../hooks/useImageExtractor';
 
 export default function LinkExtractor() {
   // --- State Management ---
   const [urlInput, setUrlInput] = useState('');
-  const [images, setImages] = useState([]);
-  const [error, setError] = useState('');
   const [filterText, setFilterText] = useState('');
   const [useHighRes, setUseHighRes] = useState(true);
-  
-  // useTransition manages the loading state for the Server Action
-  const [isPending, startTransition] = useTransition();
+
+  /**
+   * UPGRADE: Using the proxy-based hook instead of Server Actions.
+   * This bypasses CORS and server-side blocks encountered in cloud environments.
+   */
+  const { images, setImages, loading, error, extractImages } = useImageExtractor();
 
   // --- Handlers ---
   const handleExtract = (e) => {
     e.preventDefault();
     if (!urlInput) return;
 
-    setError('');
+    /**
+     * IMPROVEMENT: URL Hardening.
+     * Ensures the scraper receives an absolute URL, preventing "Failed to parse URL" errors.
+     */
+    const formattedUrl = urlInput.startsWith('http') ? urlInput : `https://${urlInput}`;
     
-    // Executes the scraping logic on the server
-    startTransition(async () => {
-      try {
-        const result = await scrapeImagesAction(urlInput);
-        
-        if (result.success) {
-          setImages(result.data);
-        } else {
-          setError(result.error || 'Failed to extract images.');
-          setImages([]);
-        }
-      } catch (err) {
-        setError('A network error occurred. Please try again.');
-        setImages([]);
-      }
-    });
+    extractImages(formattedUrl);
   };
 
   const toggleSelection = (id) => {
@@ -51,7 +41,6 @@ export default function LinkExtractor() {
   };
 
   const selectAll = (targetImages) => {
-    // targetImages refers to the current filtered set from ImageSelector
     const targetIds = new Set(targetImages.map(img => img.id));
     setImages(prev => prev.map(img => 
       targetIds.has(img.id) ? { ...img, selected: true } : img
@@ -62,6 +51,17 @@ export default function LinkExtractor() {
     const targetIds = new Set(targetImages.map(img => img.id));
     setImages(prev => prev.map(img => 
       targetIds.has(img.id) ? { ...img, selected: false } : img
+    ));
+  };
+
+  /**
+   * UPGRADE: Invert Selection.
+   * A "Pro" feature for power users to quickly toggle between sets of images.
+   */
+  const invertSelection = (targetImages) => {
+    const targetIds = new Set(targetImages.map(img => img.id));
+    setImages(prev => prev.map(img => 
+      targetIds.has(img.id) ? { ...img, selected: !img.selected } : img
     ));
   };
 
@@ -82,15 +82,17 @@ export default function LinkExtractor() {
       <UrlInputForm 
         url={urlInput}
         setUrl={setUrlInput}
-        loading={isPending} // transition state replaces manual loading state
-        error={error}
+        loading={loading} // Now using state from the hook
+        error={error}     // Now using error from the hook
         onSubmit={handleExtract}
       />
 
-      {images.length === 0 && !isPending && (
+      {/* Show AboutSection only when idle and empty */}
+      {images.length === 0 && !loading && (
         <AboutSection />
       )}
 
+      {/* Grid view appears only when images are found */}
       {images.length > 0 && (
         <div className="grid lg:grid-cols-2 gap-6 animate-in fade-in slide-in-from-bottom-2 duration-500">
           <ImageSelector 
@@ -98,6 +100,7 @@ export default function LinkExtractor() {
             onToggle={toggleSelection}
             onSelectAll={selectAll}
             onDeselectAll={deselectAll}
+            onInvert={() => invertSelection(images)} // Improvement: Batch invert
             filterText={filterText}
             setFilterText={setFilterText}
             useHighRes={useHighRes}
