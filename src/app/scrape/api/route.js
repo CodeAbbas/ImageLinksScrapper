@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { scrape } from '@/app/actions/scrape'; // Import your existing logic!
+import { scrapeImagesAction } from '@/app/actions/scrape'; 
 
 export async function POST(req) {
   try {
@@ -10,10 +10,9 @@ export async function POST(req) {
       return NextResponse.json({ error: 'URL is required' }, { status: 400 });
     }
 
-    // Call your existing server action logic here
-    const result = await scrape(url); 
+    const result = await scrapeImagesAction(url); 
 
-    // Return it as standard JSON so your Furniture App can read it
+    // Return standard JSON response
     return NextResponse.json(result); 
     
   } catch (error) {
