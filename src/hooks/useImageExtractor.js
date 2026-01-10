@@ -2,7 +2,7 @@ import { useState, useCallback } from 'react';
 import { getCleanUrl, ensureAbsoluteUrl } from '../utils/urlHelpers';
 
 const MAX_RETRIES = 2;
-const TIMEOUT_MS = 10000; // 10 seconds
+const TIMEOUT_MS = 15000; // 10 seconds
 
 export const useImageExtractor = () => {
   const [images, setImages] = useState([]);
