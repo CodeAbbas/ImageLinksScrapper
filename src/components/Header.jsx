@@ -1,12 +1,19 @@
 import React from 'react';
-import { ImageIcon } from 'lucide-react';
+import Image from 'next/image';
+import logo from '../app/LinkExtractor.webp'; 
 
 export default function Header() {
   return (
     <header className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
       <div className="flex items-center gap-3">
-        <div className="p-2.5 bg-gradient-to-br from-blue-500 to-cyan-400 rounded-xl shadow-lg">
-          <ImageIcon className="w-6 h-6 text-white" />
+        <div className="p-1 rounded-xl shadow-lg flex items-center justify-center overflow-hidden">
+          <Image 
+            src={logo} 
+            alt="Link Extractor Logo" 
+            width={48} 
+            height={48} 
+            className="object-contain"
+          />
         </div>
         <div>
           <h1 className="text-2xl font-bold text-slate-800 tracking-tight">
